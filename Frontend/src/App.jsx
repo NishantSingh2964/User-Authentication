@@ -9,6 +9,7 @@ import ProtectedRoute from './Components/ProtectedRoutes';
 import About from './Pages/About';
 import Blog from './Pages/Blog';
 import Contact from './Pages/Contact';
+import Profile from './Pages/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact-us" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>

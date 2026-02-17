@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
 
 const Navbar = () => {
@@ -13,6 +13,11 @@ const Navbar = () => {
     navigate("/");
   };
 
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-blue-600 font-semibold"
+      : "hover:text-blue-600 transition";
+
   return (
     <nav className="bg-white shadow-md px-8 py-4">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -24,18 +29,18 @@ const Navbar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
-          <Link to="/home" className="hover:text-blue-600 transition">
+          <NavLink to="/home" className={navLinkClass}>
             Home
-          </Link>
-          <Link to="/about" className="hover:text-blue-600 transition">
+          </NavLink>
+          <NavLink to="/about" className={navLinkClass}>
             About
-          </Link>
-          <Link to="/contact-us" className="hover:text-blue-600 transition">
+          </NavLink>
+          <NavLink to="/contact-us" className={navLinkClass}>
             Contact Us
-          </Link>
-          <Link to="/blog" className="hover:text-blue-600 transition">
+          </NavLink>
+          <NavLink to="/blog" className={navLinkClass}>
             Blog
-          </Link>
+          </NavLink>
         </div>
 
         {/* Profile Dropdown */}
@@ -45,14 +50,26 @@ const Navbar = () => {
           </div>
 
           {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+          <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-md 
+          opacity-0 group-hover:opacity-100 invisible group-hover:visible 
+          transition-all duration-200 overflow-hidden">
+
+            <NavLink
+              to="/profile"
+              className="block px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
+            >
+              Profile
+            </NavLink>
+
             <button
               onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
             >
               Logout
             </button>
+
           </div>
+
         </div>
 
       </div>

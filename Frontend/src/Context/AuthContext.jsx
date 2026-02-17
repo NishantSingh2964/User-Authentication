@@ -6,7 +6,7 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
-    const backendUrl = "https://user-authentication-ecru.vercel.app/api/user";
+    const backendUrl = "http://localhost:4000/api/user";
 
     const signup = async (name, email, password) => {
         try {
@@ -17,9 +17,12 @@ const AuthProvider = ({ children }) => {
             });
 
             if (res.data.success) {
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("name", res.data.name);
-                setUser({ name: res.data.name });
+                const { token, user } = res.data;
+
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user)); // ✅ FIXED
+
+                setUser(user);
             }
 
             return res.data;
@@ -32,6 +35,7 @@ const AuthProvider = ({ children }) => {
         }
     };
 
+
     const login = async (email, password) => {
         try {
             const res = await axios.post(`${backendUrl}/login`, {
@@ -40,33 +44,42 @@ const AuthProvider = ({ children }) => {
             });
 
             if (res.data.success) {
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("name", res.data.name);
-                setUser({ name: res.data.name });
+                const { token, user } = res.data;
+
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user)); // ✅ FIXED
+
+                setUser(user);
             }
+
 
             return res.data;
         } catch (error) {
             return {
                 success: false,
                 message:
-                    error.response?.data?.message,
+                    error.response?.data?.message || "Something went wrong",
             };
         }
     };
 
+
     const logout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user"); // ✅ remove user too
         setUser(null);
     };
 
-    useEffect(() => {
-        const storedName = localStorage.getItem("name");
 
-        if (storedName) {
-            setUser({ name: storedName });
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+
+        if (storedUser && storedUser !== "undefined") {
+            setUser(JSON.parse(storedUser));
         }
     }, []);
+
+
 
     const value = {
         user,

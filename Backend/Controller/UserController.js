@@ -44,7 +44,7 @@ const signUp = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    return res.json({ success: true, token });
+    return res.json({ success: true, token, user: user });
 }
 
 const Login = async (req, res)=>{
@@ -79,7 +79,7 @@ const Login = async (req, res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    return res.json({ success: true, token, name: existingUser.name });
+    return res.json({ success: true, token, user: existingUser});
 }
 
 export const logout = async (req, res) => {
