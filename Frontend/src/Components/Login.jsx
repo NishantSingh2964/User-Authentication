@@ -23,9 +23,8 @@ const Login = ({isLoggedIn, setIsLoggedIn}) => {
       alert(response.message);
     }
 
-    setName("");
     setEmail("");
-    setPassword("");
+    setPassowrd("");
   };
 
   return (
