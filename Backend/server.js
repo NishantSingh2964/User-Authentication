@@ -16,6 +16,10 @@ connectDB();
 // Routes
 app.use('/api/user', userRouter)
 
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
