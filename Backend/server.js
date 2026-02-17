@@ -5,23 +5,29 @@ import userRouter from "./Routes/userRoutes.js";
 import cors from "cors";
 
 dotenv.config();
+
 const app = express();
 
-// Middleware
+// Connect DB
+connectDB();
+
+// Middlewares
+app.use(express.json());
+
 app.use(
   cors({
-    origin: "https://user-authentication-yrl6.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: process.env.FRONTEND_URL || "https://user-authentication-yrl6.vercel.app",
     credentials: true,
   })
 );
-app.use(express.json());
-connectDB();
 
 // Routes
-app.use('/api/user', userRouter)
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
-  res.send("API is running 🚀");
+  res.status(200).send("API is running 🚀");
 });
+
+export default app;
+
 
