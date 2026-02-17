@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -10,6 +11,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    toast.error("Logged out")
     navigate("/");
   };
 

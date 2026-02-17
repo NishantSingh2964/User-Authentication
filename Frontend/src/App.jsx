@@ -10,10 +10,13 @@ import About from './Pages/About';
 import Blog from './Pages/Blog';
 import Contact from './Pages/Contact';
 import Profile from './Pages/Profile';
+import { Toaster } from "react-hot-toast";
+
 
 function App() {
   return (
     <>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
         <Route element={<ProtectedRoute />}>

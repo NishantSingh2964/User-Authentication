@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
+import toast from "react-hot-toast";
 
 const SignUp = ({ isLoggedIn, setIsLoggedIn }) => {
 
@@ -17,7 +18,7 @@ const SignUp = ({ isLoggedIn, setIsLoggedIn }) => {
     const response = await signup(name, email, password);
 
     if (response.success) {
-      alert(response.message || "Signup successful");
+      toast.success("Successfuly Signed-in")
       navigate("/home");
     } else {
       alert(response.message);

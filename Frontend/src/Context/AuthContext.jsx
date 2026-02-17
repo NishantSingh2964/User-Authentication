@@ -20,7 +20,7 @@ const AuthProvider = ({ children }) => {
                 const { token, user } = res.data;
 
                 localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user)); // ✅ FIXED
+                localStorage.setItem("user", JSON.stringify(user)); 
 
                 setUser(user);
             }
