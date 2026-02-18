@@ -5,7 +5,11 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+<<<<<<< HEAD
   const backendUrl = "https://user-authentication-ecru.vercel.app/api/user"; 
+=======
+  const backendUrl = " https://user-authentication-ecru.vercel.app/api/user";
+>>>>>>> 76339907dfdf96ea1f52ec9da2e1c45149e5f3dd
 
   // Signup
   const signup = async (name, email, password) => {
