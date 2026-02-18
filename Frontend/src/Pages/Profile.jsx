@@ -26,16 +26,45 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm("Are you sure you want to delete your account? This action is irreversible!")) return;
-
-    const res = await deleteAccount();
-
-    if (res.success) {
-      logout();
-      toast.success("Account deleted successfully");
-      navigate("/");
-    }
+    toast(
+      (t) => (
+        <div className="flex flex-col space-y-2">
+          <p className="text-white font-medium">
+            Are you sure you want to delete your account? This action is irreversible!
+          </p>
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id); // close confirmation toast
+                const res = await deleteAccount();
+                if (res.success) {
+                  logout();
+                  toast.success("Account deleted successfully");
+                  navigate("/");
+                } else {
+                  toast.error(res.message);
+                }
+              }}
+              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 8000, 
+        style: { background: "#333" }, 
+      }
+    );
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
@@ -62,9 +91,8 @@ const Profile = () => {
           <div className="flex justify-between border-b pb-2">
             <span className="text-gray-600">Email Verified</span>
             <span
-              className={`text-sm font-medium ${
-                user.isAccountVerified ? "text-green-600" : "text-red-500"
-              }`}
+              className={`text-sm font-medium ${user.isAccountVerified ? "text-green-600" : "text-red-500"
+                }`}
             >
               {user.isAccountVerified ? "Verified" : "Not Verified"}
             </span>
