@@ -11,6 +11,7 @@ import Blog from './Pages/Blog';
 import Contact from './Pages/Contact';
 import Profile from './Pages/Profile';
 import { Toaster } from "react-hot-toast";
+import ForgotPassword from './Pages/ForgotPassword';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />

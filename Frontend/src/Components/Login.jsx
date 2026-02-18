@@ -1,31 +1,28 @@
 import React, { useContext, useState } from "react";
-import axios from 'axios'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
 import toast from "react-hot-toast";
 
+const Login = ({ isLoggedIn, setIsLoggedIn }) => {
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
-const Login = ({isLoggedIn, setIsLoggedIn}) => {
-
-   const [password, setPassowrd] = useState('');
-   const [email, setEmail] = useState('');
-   const navigate = useNavigate();
-   const { login } = useContext(AuthContext);
-
-   const onSubmitHandler = async (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    const response = await login( email, password);
+    const response = await login(email, password);
 
     if (response.success) {
-      toast.success("Login Successful")
+      toast.success("Login Successful");
       navigate("/home");
     } else {
       alert(response.message);
     }
 
     setEmail("");
-    setPassowrd("");
+    setPassword("");
   };
 
   return (
@@ -35,29 +32,35 @@ const Login = ({isLoggedIn, setIsLoggedIn}) => {
 
         <form className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1">Email</label>
             <input
               type="email"
               placeholder="Enter your email"
               value={email}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e)=> setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Password
-            </label>
+            <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
               value={password}
               placeholder="Enter your password"
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onChange={(e)=> setPassowrd(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+
+          {/* Forgot Password Link */}
+          <div className="text-right">
+            <Link
+              to="/forgot-password"
+              className="text-blue-600 text-sm hover:underline"
+            >
+              Forgot Password?
+            </Link>
           </div>
 
           <button
@@ -69,8 +72,9 @@ const Login = ({isLoggedIn, setIsLoggedIn}) => {
           </button>
         </form>
 
-        <p className="text-sm text-center mt-4"
-        onClick={()=> setIsLoggedIn(!isLoggedIn)}
+        <p
+          className="text-sm text-center mt-4"
+          onClick={() => setIsLoggedIn(!isLoggedIn)}
         >
           Don’t have an account?{" "}
           <span className="text-blue-600 cursor-pointer hover:underline">

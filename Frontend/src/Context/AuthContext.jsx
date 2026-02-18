@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const backendUrl = " https://user-authentication-ecru.vercel.app";
+  const backendUrl = "https://user-authentication-ecru.vercel.app/api/user"; 
 
   // Signup
   const signup = async (name, email, password) => {
@@ -46,7 +46,7 @@ const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  // Send OTP
+  // Send verification OTP (for email verification)
   const sendVerificationOtp = async () => {
     try {
       const res = await axios.post(`${backendUrl}/send-verification-otp`, { email: user.email });
@@ -56,7 +56,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Verify OTP
+  // Verify OTP (for email verification)
   const verifyOtp = async (otp) => {
     try {
       const res = await axios.post(`${backendUrl}/verify-otp`, { email: user.email, otp });
@@ -65,6 +65,36 @@ const AuthProvider = ({ children }) => {
         setUser(updatedUser);
         localStorage.setItem("user", JSON.stringify(updatedUser));
       }
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
+
+  // Send OTP for forgot password
+  const sendResetOtp = async (email) => {
+    try {
+      const res = await axios.post(`${backendUrl}/forgot-password`, { email });
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
+
+  // Verify OTP for forgot password
+  const verifyResetOtp = async (email, otp) => {
+    try {
+      const res = await axios.post(`${backendUrl}/verify-reset-otp`, { email, otp });
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
+
+  // Reset password
+  const resetPassword = async (email, otp, newPassword) => {
+    try {
+      const res = await axios.post(`${backendUrl}/reset-password`, { email, otp, newPassword });
       return res.data;
     } catch (error) {
       return { success: false, message: error.response?.data?.message || error.message };
@@ -87,6 +117,9 @@ const AuthProvider = ({ children }) => {
         logout,
         sendVerificationOtp,
         verifyOtp,
+        sendResetOtp,
+        verifyResetOtp,
+        resetPassword,
       }}
     >
       {children}
