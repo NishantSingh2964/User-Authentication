@@ -4,95 +4,94 @@ import axios from "axios";
 export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
+  const backendUrl = " https://user-authentication-ecru.vercel.app";
 
-    const backendUrl = "https://user-authentication-ecru.vercel.app/api/user";
+  // Signup
+  const signup = async (name, email, password) => {
+    try {
+      const res = await axios.post(`${backendUrl}/signup`, { name, email, password });
+      if (res.data.success) {
+        const { token, user } = res.data;
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+      }
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Something went wrong" };
+    }
+  };
 
-    const signup = async (name, email, password) => {
-        try {
-            const res = await axios.post(`${backendUrl}/signup`, {
-                name,
-                email,
-                password,
-            });
+  // Login
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(`${backendUrl}/login`, { email, password });
+      if (res.data.success) {
+        const { token, user } = res.data;
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+      }
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || "Something went wrong" };
+    }
+  };
 
-            if (res.data.success) {
-                const { token, user } = res.data;
+  // Logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
-                localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user)); 
+  // Send OTP
+  const sendVerificationOtp = async () => {
+    try {
+      const res = await axios.post(`${backendUrl}/send-verification-otp`, { email: user.email });
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
 
-                setUser(user);
-            }
+  // Verify OTP
+  const verifyOtp = async (otp) => {
+    try {
+      const res = await axios.post(`${backendUrl}/verify-otp`, { email: user.email, otp });
+      if (res.data.success) {
+        const updatedUser = { ...user, isAccountVerified: true };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      }
+      return res.data;
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || error.message };
+    }
+  };
 
-            return res.data;
-        } catch (error) {
-            return {
-                success: false,
-                message:
-                    error.response?.data?.message || "Something went wrong",
-            };
-        }
-    };
+  // Load user from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser && storedUser !== "undefined") setUser(JSON.parse(storedUser));
+  }, []);
 
-
-    const login = async (email, password) => {
-        try {
-            const res = await axios.post(`${backendUrl}/login`, {
-                email,
-                password,
-            });
-
-            if (res.data.success) {
-                const { token, user } = res.data;
-
-                localStorage.setItem("token", token);
-                localStorage.setItem("user", JSON.stringify(user)); // ✅ FIXED
-
-                setUser(user);
-            }
-
-
-            return res.data;
-        } catch (error) {
-            return {
-                success: false,
-                message:
-                    error.response?.data?.message || "Something went wrong",
-            };
-        }
-    };
-
-
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user"); // ✅ remove user too
-        setUser(null);
-    };
-
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-
-        if (storedUser && storedUser !== "undefined") {
-            setUser(JSON.parse(storedUser));
-        }
-    }, []);
-
-
-
-    const value = {
+  return (
+    <AuthContext.Provider
+      value={{
         user,
+        setUser,
         signup,
         login,
         logout,
-    };
-
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-        </AuthContext.Provider>
-    );
+        sendVerificationOtp,
+        verifyOtp,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

@@ -2,8 +2,8 @@ import { json } from "express";
 import userModel from "../Models/userModels.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-
+import crypto from "crypto";
+import sendEmail from "../utils/sendEmail.js"; 
 
 const signUp = async (req, res) => {
     const { name, email, password } = req.body;
@@ -97,4 +97,60 @@ export const logout = async (req, res) => {
     }
 };
 
-export { signUp, Login };
+// Send OTP for verification
+const sendVerificationOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) return res.json({ success: false, message: "User not found" });
+    if (user.isAccountVerified) {
+      return res.json({ success: false, message: "Account already verified" });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expireAt = Date.now() + 10 * 60 * 1000; // OTP valid 10 mins
+
+    user.verifyOtp = otp;
+    user.verifyOtpExpireAt = expireAt;
+    await user.save();
+
+    // Send OTP via email
+    const message = `<p>Your OTP for email verification is: <b>${otp}</b></p>`;
+    await sendEmail(user.email, "Email Verification OTP", message);
+
+    res.json({ success: true, message: "OTP sent to your email" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) return res.json({ success: false, message: "User not found" });
+    if (user.isAccountVerified) {
+      return res.json({ success: false, message: "Account already verified" });
+    }
+
+    if (user.verifyOtp !== otp || Date.now() > user.verifyOtpExpireAt) {
+      return res.json({ success: false, message: "Invalid or expired OTP" });
+    }
+
+    user.isAccountVerified = true;
+    user.verifyOtp = "";
+    user.verifyOtpExpireAt = 0;
+    await user.save();
+
+    res.json({ success: true, message: "Account verified successfully!" });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+
+export { signUp, Login, sendVerificationOtp, verifyOtp };
