@@ -1,5 +1,5 @@
 import express, { Router } from 'express'
-import { forgotPassword, Login, logout, resetPassword, sendVerificationOtp, signUp, verifyOtp, verifyResetOtp } from '../Controller/UserController.js';
+import { deleteUser, forgotPassword, Login, logout, resetPassword, sendVerificationOtp, signUp, verifyOtp, verifyResetOtp } from '../Controller/UserController.js';
 
 const userRouter = express.Router();
 
@@ -11,5 +11,6 @@ userRouter.post("/verify-otp", verifyOtp);
 userRouter.post('/forgot-password', forgotPassword);
 userRouter.post('/verify-reset-otp', verifyResetOtp);
 userRouter.post('/reset-password', resetPassword);
+userRouter.post('/delete-account', deleteUser);
 
 export default userRouter;

@@ -222,4 +222,21 @@ const resetPassword = async (req, res) => {
     res.json({ success: true, message: "Password reset successfully" });
 };
 
-export { signUp, Login, sendVerificationOtp, verifyOtp, forgotPassword, verifyResetOtp, resetPassword };
+const deleteUser = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    await user.deleteOne();
+    res.json({ success: true, message: "Account deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export { signUp, Login, sendVerificationOtp, verifyOtp, forgotPassword, verifyResetOtp, resetPassword, deleteUser};
