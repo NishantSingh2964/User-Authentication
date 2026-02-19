@@ -12,12 +12,16 @@ import Contact from './Pages/Contact';
 import Profile from './Pages/Profile';
 import { Toaster } from "react-hot-toast";
 import ForgotPassword from './Pages/ForgotPassword';
+import WriteBlog from './Pages/WriteBlog';
+import SingleBlog from './Pages/SingleBlog';
+import ScrollToTop from './Components/ScrollToTop';
 
 
 function App() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
+      <ScrollToTop/>
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
         <Route path='/forgot-password' element={<ForgotPassword/>} />
@@ -28,6 +32,8 @@ function App() {
             <Route path="/contact-us" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/write-blog" element={<WriteBlog />} />
+            <Route path="/blog/:id" element={<SingleBlog/>} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>

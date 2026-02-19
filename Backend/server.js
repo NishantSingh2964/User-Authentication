@@ -3,6 +3,7 @@ import connectDB from "./config/database.js";
 import dotenv from "dotenv";
 import userRouter from "./Routes/userRoutes.js";
 import cors from "cors";
+import BlogRouter from "./Routes/blogRoutes.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(
 
 // Routes
 app.use("/api/user", userRouter);
+app.use("/api/user/blog", BlogRouter)
 
 app.get("/", (req, res) => {
   res.status(200).send("API is running 🚀");
