@@ -122,8 +122,6 @@ const BlogProvider = ({ children }) => {
           prev?._id === id ? null : prev
         );
       }
-
-      toast.success(res.data.message);
       return res.data;
 
     } catch (error) {
