@@ -24,7 +24,7 @@ app.use(
 
 // Routes
 app.use("/api/user", userRouter);
-app.use("/api/user/blog", BlogRouter)
+app.use("/api/blog", BlogRouter)
 
 app.get("/", (req, res) => {
   res.status(200).send("API is running 🚀");
