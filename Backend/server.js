@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import userRouter from "./Routes/userRoutes.js";
 import cors from "cors";
 import BlogRouter from "./Routes/blogRoutes.js";
-
+import commentRouter from "./Routes/commentRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -24,12 +24,12 @@ app.use(
 
 // Routes
 app.use("/api/user", userRouter);
-app.use("/api/blog", BlogRouter)
+app.use("/api/blog", BlogRouter);
+app.use("/api/comments", commentRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("API is running 🚀");
 });
 
 export default app;
-
 

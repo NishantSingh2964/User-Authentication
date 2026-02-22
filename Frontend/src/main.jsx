@@ -5,13 +5,16 @@ import App from './App.jsx'
 import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "./Context/AuthContext.jsx";
 import BlogProvider from './Context/blogContext.jsx';
+import CommentContextProvider from './Context/CommentContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <BrowserRouter>
-    <BlogProvider>
-       <App />
-    </BlogProvider>
+      <BlogProvider>
+        <CommentContextProvider>
+          <App />
+        </CommentContextProvider>
+      </BlogProvider>
     </BrowserRouter>
   </AuthProvider>
 )

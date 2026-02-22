@@ -5,8 +5,21 @@ export const createBlog = async (req, res) => {
     try {
         const { title, content, category } = req.body;
 
-        let imageUrl = "";
+        if (!req.user.isAccountVerified) {
+            return res.status(403).json({
+                success: false,
+                message: "Please verify yourself before writing a blog."
+            });
+        }
 
+        if (!title || !content || !category) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required."
+            });
+        }
+
+        let imageUrl = "";
         if (req.file) {
             const result = await cloudinary.uploader.upload(
                 req.file.path,
@@ -23,9 +36,18 @@ export const createBlog = async (req, res) => {
             author: req.user._id,
         });
 
-        res.json({ success: true, blog });
+        return res.status(201).json({
+            success: true,
+            message: "Blog created successfully",
+            blog,
+        });
+
     } catch (error) {
-        res.json({ success: false, message: error.message });
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error while creating blog."
+        });
     }
 };
 

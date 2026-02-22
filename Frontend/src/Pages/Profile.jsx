@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import BlogCard from "../Components/BlogCard.jsx";
 
-
 const Profile = () => {
   const { user, sendVerificationOtp, verifyOtp, deleteAccount, logout } =
     useContext(AuthContext);
@@ -15,13 +14,36 @@ const Profile = () => {
   const [otp, setOtp] = useState("");
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [showAll, setShowAll] = useState(false);
+
+  // NEW: Search & Filter
+  const [searchText, setSearchText] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+
   const navigate = useNavigate();
+  const isVerified = user?.isAccountVerified;
 
   useEffect(() => {
     if (user) {
       getMyBlogs();
     }
   }, [user]);
+
+  useEffect(() => {
+    let temp = [...blogs];
+
+    if (searchText.trim() !== "") {
+      temp = temp.filter((blog) =>
+        blog.title.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    if (categoryFilter !== "") {
+      temp = temp.filter((blog) => blog.category === categoryFilter);
+    }
+
+    setFilteredBlogs(temp);
+  }, [searchText, categoryFilter, blogs]);
 
   if (!user) {
     return (
@@ -34,13 +56,20 @@ const Profile = () => {
   const handleSendOtp = async () => {
     const res = await sendVerificationOtp();
     toast[res.success ? "success" : "error"](res.message);
-    if (res.success) setShowOtpInput(true);
+
+    if (res.success) {
+      setShowOtpInput(true);
+    }
   };
 
   const handleVerifyOtp = async () => {
     const res = await verifyOtp(otp);
     toast[res.success ? "success" : "error"](res.message);
-    if (res.success) setShowOtpInput(false);
+
+    if (res.success) {
+      setShowOtpInput(false);
+      setOtp("");
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -83,16 +112,18 @@ const Profile = () => {
     );
   };
 
+  const categories = [...new Set(blogs.map((b) => b.category))];
+
   return (
     <div className="h-screen bg-gray-50 px-6 py-10 overflow-hidden">
       <Toaster position="top-right" />
 
       <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 h-full">
-
-        {/* LEFT SIDE - PROFILE CARD (Sticky) */}
+        {/* LEFT SIDE - PROFILE + Filters */}
         <div className="col-span-1">
-          <div className="bg-white shadow-xl rounded-2xl p-8 sticky top-10">
-
+          <div className="bg-white shadow-xl rounded-2xl p-8 sticky top-10 space-y-6">
+            
+            {/* PROFILE INFO */}
             <div className="flex flex-col items-center text-center">
               <img
                 src="https://i.pravatar.cc/150?img=3"
@@ -105,46 +136,68 @@ const Profile = () => {
               <p className="text-gray-500 text-sm">{user.email}</p>
             </div>
 
-            <div className="mt-6 space-y-4 text-sm">
+            <div className="space-y-2 text-sm">
               <div className="flex justify-between border-b pb-2">
                 <span>User ID</span>
                 <span className="text-gray-600 truncate max-w-[120px]">
                   {user._id}
                 </span>
               </div>
-
               <div className="flex justify-between border-b pb-2">
                 <span>Email Verified</span>
                 <span
-                  className={`font-medium ${user.isAccountVerified
-                    ? "text-green-600"
-                    : "text-red-500"
-                    }`}
+                  className={`font-medium ${
+                    isVerified ? "text-green-600" : "text-red-500"
+                  }`}
                 >
-                  {user.isAccountVerified ? "Verified" : "Not Verified"}
+                  {isVerified ? "Verified" : "Not Verified"}
                 </span>
               </div>
             </div>
 
-            {/* Create Blog Button */}
-            <button
-              onClick={() => navigate("/write-blog")}
-              className="mt-6 w-full bg-indigo-600 text-white py-2.5 rounded-xl hover:bg-indigo-700 transition font-medium shadow-md"
-            >
-              + Create Blog
-            </button>
+            {/* FILTERS */}
+            <div className="mt-4 space-y-3">
+              <input
+                type="text"
+                placeholder="Search your blogs..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
 
-            {!user.isAccountVerified && !showOtpInput && (
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full border p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* ACTION BUTTONS */}
+            {isVerified ? (
+              <button
+                onClick={() => navigate("/write-blog")}
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-xl hover:bg-indigo-700 transition font-medium shadow-md"
+              >
+                + Create Blog
+              </button>
+            ) : !showOtpInput ? (
               <button
                 onClick={handleSendOtp}
-                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                className="w-full bg-green-600 text-white py-2.5 rounded-xl hover:bg-green-700 transition font-medium shadow-md"
               >
-                Verify Email
+                Verify Profile
               </button>
-            )}
+            ) : null}
 
             {showOtpInput && (
-              <div className="mt-4 space-y-2">
+              <div className="space-y-2">
                 <input
                   type="text"
                   placeholder="Enter OTP"
@@ -163,43 +216,44 @@ const Profile = () => {
 
             <button
               onClick={handleDeleteAccount}
-              className="mt-6 w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+              className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
             >
               Delete Account
             </button>
-
           </div>
         </div>
 
-        {/* RIGHT SIDE - SCROLLABLE BLOG SECTION */}
+        {/* RIGHT SIDE - BLOGS */}
         <div className="col-span-2 h-full overflow-y-auto pr-2 hide-scrollbar">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">
-              Your Recent Blogs
+              Your Blogs
             </h2>
-
-            <button
-              onClick={() => navigate("/write-blog")}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium"
-            >
-              + New Blog
-            </button>
+            {isVerified && (
+              <button
+                onClick={() => navigate("/write-blog")}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium"
+              >
+                + New Blog
+              </button>
+            )}
           </div>
 
-          {blogs?.length === 0 ? (
+          {filteredBlogs?.length === 0 ? (
             <div className="bg-white p-8 rounded-2xl shadow text-center text-gray-500">
-              You haven't written any blogs yet.
+              {!isVerified
+                ? "Verify yourself first to write blogs."
+                : "No blogs match your search/filter."}
             </div>
           ) : (
             <>
               <div className="grid md:grid-cols-2 gap-6 pb-6">
-                {(showAll ? blogs : blogs.slice(0, 4)).map((blog) => (
-                  <BlogCard key={blog._id} blog={blog} />
-                ))}
+                {(showAll ? filteredBlogs : filteredBlogs.slice(0, 4)).map(
+                  (blog) => <BlogCard key={blog._id} blog={blog} />
+                )}
               </div>
 
-              {/* View More / Hide Button */}
-              {blogs.length > 4 && (
+              {filteredBlogs.length > 4 && (
                 <div className="text-center">
                   <button
                     onClick={() => setShowAll(!showAll)}
@@ -211,13 +265,10 @@ const Profile = () => {
               )}
             </>
           )}
-
         </div>
-
       </div>
     </div>
   );
-
 };
 
 export default Profile;

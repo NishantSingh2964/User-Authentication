@@ -108,6 +108,15 @@ const WriteBlog = () => {
     }
   };
 
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!storedUser?.isAccountVerified) {
+      toast.error("Verify yourself first to write blogs.");
+      navigate("/profile");
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8">
@@ -207,8 +216,8 @@ const WriteBlog = () => {
                   ? "Updating..."
                   : "Publishing..."
                 : existingBlog
-                ? "Update Blog ✏️"
-                : "Publish Blog 🚀"}
+                  ? "Update Blog ✏️"
+                  : "Publish Blog 🚀"}
             </button>
 
           </form>
