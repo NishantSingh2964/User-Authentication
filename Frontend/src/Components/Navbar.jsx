@@ -7,8 +7,8 @@ import * as HiIcons from "react-icons/hi"; // Vite-compatible import
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const firstLetter = user?.name?.charAt(0).toUpperCase();
 
   const HiMenu = HiIcons.HiMenu;
@@ -33,7 +33,7 @@ const Navbar = () => {
           MyLogo
         </div>
 
-        {/* ===== NAV LINKS (CENTER FOR LARGE SCREENS) ===== */}
+        {/* ===== NAV LINKS (CENTER ON LARGE SCREEN) ===== */}
         <div className="hidden md:flex flex-1 justify-center space-x-8 text-gray-700 font-medium">
           <NavLink to="/home" className={navLinkClass}>Home</NavLink>
           <NavLink to="/about" className={navLinkClass}>About</NavLink>
@@ -43,14 +43,33 @@ const Navbar = () => {
 
         {/* ===== USER ICON + HAMBURGER ===== */}
         <div className="flex items-center space-x-4">
-          {/* User icon */}
+          {/* Desktop User Icon with Hover Dropdown */}
           {user && (
-            <div className="hidden md:flex w-10 h-10 items-center justify-center rounded-full bg-blue-600 text-white font-semibold cursor-pointer">
-              {firstLetter || "U"}
+            <div className="hidden md:block relative group">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white font-semibold cursor-pointer">
+                {firstLetter || "U"}
+              </div>
+              {/* Dropdown */}
+              <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-md 
+                opacity-0 group-hover:opacity-100 invisible group-hover:visible 
+                transition-all duration-200 overflow-hidden z-50">
+                <NavLink
+                  to="/profile"
+                  className="block px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
+                >
+                  Profile
+                </NavLink>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Hamburger icon (visible on small screens) */}
+          {/* Hamburger Icon (mobile) */}
           <button
             onClick={() => setIsMenuOpen(true)}
             className="md:hidden text-2xl text-gray-700 focus:outline-none flex items-center"
@@ -58,7 +77,7 @@ const Navbar = () => {
             <HiMenu />
           </button>
 
-          {/* User icon small screen */}
+          {/* Mobile User Icon */}
           {user && (
             <div className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white font-semibold ml-3">
               {firstLetter || "U"}
@@ -86,7 +105,6 @@ const Navbar = () => {
           <NavLink to="/contact-us" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Contact Us</NavLink>
           <NavLink to="/blog" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Blog</NavLink>
 
-          {/* Profile + Logout */}
           {user && (
             <>
               <NavLink to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Profile</NavLink>
