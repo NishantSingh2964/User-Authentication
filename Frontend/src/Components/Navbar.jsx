@@ -2,144 +2,107 @@ import React, { useContext, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext.jsx";
 import toast from "react-hot-toast";
-import { HiMenu, HiX } from "react-icons/hi"; 
+import * as HiIcons from "react-icons/hi"; // Vite-compatible import
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const firstLetter = user?.name?.charAt(0).toUpperCase();
+
+  const HiMenu = HiIcons.HiMenu;
+  const HiX = HiIcons.HiX;
 
   const handleLogout = () => {
     logout();
     toast.error("Logged out");
     navigate("/");
-    setIsMenuOpen(false); 
+    setIsMenuOpen(false);
   };
 
   const navLinkClass = ({ isActive }) =>
-    isActive
-      ? "text-blue-600 font-semibold"
-      : "hover:text-blue-600 transition";
+    isActive ? "text-blue-600 font-semibold" : "hover:text-blue-600 transition";
 
   return (
-    <nav className="bg-white shadow-md px-6 py-4 fixed w-full z-50">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
+    <nav className="bg-white shadow-md fixed w-full z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
-        {/* Logo */}
-        <div className="text-2xl font-bold text-blue-600">
+        {/* ===== LOGO ===== */}
+        <div className="text-2xl font-bold text-blue-600 flex-shrink-0">
           MyLogo
         </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
+        {/* ===== NAV LINKS (CENTER FOR LARGE SCREENS) ===== */}
+        <div className="hidden md:flex flex-1 justify-center space-x-8 text-gray-700 font-medium">
           <NavLink to="/home" className={navLinkClass}>Home</NavLink>
           <NavLink to="/about" className={navLinkClass}>About</NavLink>
           <NavLink to="/contact-us" className={navLinkClass}>Contact Us</NavLink>
           <NavLink to="/blog" className={navLinkClass}>Blog</NavLink>
-
-          {/* Profile Dropdown */}
-          <div className="relative group">
-            <div className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-600 text-white font-semibold cursor-pointer">
-              {firstLetter || "U"}
-            </div>
-            <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-md 
-              opacity-0 group-hover:opacity-100 invisible group-hover:visible 
-              transition-all duration-200 overflow-hidden z-50">
-              <NavLink
-                to="/profile"
-                className="block px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
-              >
-                Profile
-              </NavLink>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
         </div>
 
-        {/* Mobile Hamburger Icon */}
-        <div className="md:hidden flex items-center">
+        {/* ===== USER ICON + HAMBURGER ===== */}
+        <div className="flex items-center space-x-4">
+          {/* User icon */}
+          {user && (
+            <div className="hidden md:flex w-10 h-10 items-center justify-center rounded-full bg-blue-600 text-white font-semibold cursor-pointer">
+              {firstLetter || "U"}
+            </div>
+          )}
+
+          {/* Hamburger icon (visible on small screens) */}
           <button
             onClick={() => setIsMenuOpen(true)}
-            className="text-2xl text-gray-700 focus:outline-none"
+            className="md:hidden text-2xl text-gray-700 focus:outline-none flex items-center"
           >
             <HiMenu />
           </button>
+
+          {/* User icon small screen */}
+          {user && (
+            <div className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white font-semibold ml-3">
+              {firstLetter || "U"}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ===== MOBILE MENU ===== */}
       <div
-        className={`fixed top-0 left-0 h-full bg-white w-1/2 shadow-xl transform transition-transform duration-300 z-50
+        className={`fixed top-0 left-0 h-full w-2/3 max-w-xs bg-white shadow-xl transform transition-transform duration-300 z-50
           ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {/* Close Icon */}
+        {/* Close button */}
         <div className="flex justify-end p-4">
-          <button
-            onClick={() => setIsMenuOpen(false)}
-            className="text-2xl text-gray-700"
-          >
+          <button onClick={() => setIsMenuOpen(false)} className="text-2xl text-gray-700">
             <HiX />
           </button>
         </div>
 
-        {/* Menu Links */}
-        <div className="flex flex-col space-y-6 mt-6 ml-6">
-          <NavLink
-            to="/home"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-gray-700 text-lg hover:text-blue-600 transition"
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/about"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-gray-700 text-lg hover:text-blue-600 transition"
-          >
-            About
-          </NavLink>
-          <NavLink
-            to="/contact-us"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-gray-700 text-lg hover:text-blue-600 transition"
-          >
-            Contact Us
-          </NavLink>
-          <NavLink
-            to="/blog"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-gray-700 text-lg hover:text-blue-600 transition"
-          >
-            Blog
-          </NavLink>
+        {/* Mobile menu links */}
+        <div className="flex flex-col items-center justify-center h-full space-y-6 text-gray-700 font-medium text-lg">
+          <NavLink to="/home" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Home</NavLink>
+          <NavLink to="/about" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">About</NavLink>
+          <NavLink to="/contact-us" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Contact Us</NavLink>
+          <NavLink to="/blog" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Blog</NavLink>
 
-          {/* Profile & Logout */}
+          {/* Profile + Logout */}
           {user && (
             <>
-              <NavLink
-                to="/profile"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-700 text-lg hover:text-blue-600 transition"
-              >
-                Profile
-              </NavLink>
-              <button
-                onClick={handleLogout}
-                className="text-gray-700 text-left text-lg hover:text-blue-600 transition"
-              >
-                Logout
-              </button>
+              <NavLink to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-blue-600 transition">Profile</NavLink>
+              <button onClick={handleLogout} className="hover:text-blue-600 transition">Logout</button>
             </>
           )}
         </div>
       </div>
+
+      {/* Overlay for mobile menu */}
+      {isMenuOpen && (
+        <div
+          onClick={() => setIsMenuOpen(false)}
+          className="fixed inset-0 bg-black bg-opacity-25 z-40"
+        />
+      )}
     </nav>
   );
 };

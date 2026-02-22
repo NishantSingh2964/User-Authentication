@@ -21,10 +21,11 @@ function App() {
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LoginSignUp />} />
-        <Route path='/forgot-password' element={<ForgotPassword/>} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
@@ -33,13 +34,11 @@ function App() {
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/write-blog" element={<WriteBlog />} />
-            <Route path="/blog/:id" element={<SingleBlog/>} />
+            <Route path="/blog/:id" element={<SingleBlog />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
-
       </Routes>
-
     </>
   )
 }
