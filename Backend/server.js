@@ -25,9 +25,6 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Handle preflight requests
-
 // Routes
 app.use("/api/user", userRouter);
 app.use("/api/blog", BlogRouter);
