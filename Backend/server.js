@@ -1,14 +1,14 @@
-import express from "express";
-import connectDB from "./config/database.js";
 import dotenv from "dotenv";
-import userRouter from "./Routes/userRoutes.js";
+dotenv.config();
+import express from "express";
 import cors from "cors";
+import connectDB from "./config/database.js";
+import userRouter from "./Routes/userRoutes.js";
 import BlogRouter from "./Routes/blogRoutes.js";
 import commentRouter from "./Routes/commentRoutes.js";
 import bookRouter from "./Routes/bookRoutes.js";
 import orderRouter from "./Routes/orderRoutes.js";
 import favoriteRouter from "./Routes/favouriteRoutes.js";
-dotenv.config();
 
 const app = express();
 
@@ -19,11 +19,18 @@ connectDB();
 app.use(express.json());
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://user-authentication-yrl6.vercel.app",
+  origin: [
+    "https://user-authentication-yrl6.vercel.app",
+    "https://user-authentication-yrl6.vercel.app/",
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Routes
 app.use("/api/user", userRouter);
