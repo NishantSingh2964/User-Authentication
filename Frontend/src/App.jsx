@@ -15,6 +15,8 @@ import ForgotPassword from './Pages/ForgotPassword';
 import WriteBlog from './Pages/WriteBlog';
 import SingleBlog from './Pages/SingleBlog';
 import ScrollToTop from './Components/ScrollToTop';
+import Books from './Pages/Books';
+import AddBook from './Pages/AddBooks';
 
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/add-book" element={<AddBook />} />
             <Route path="/contact-us" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />

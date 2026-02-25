@@ -36,6 +36,7 @@ const Navbar = () => {
         {/* ===== NAV LINKS (CENTER ON LARGE SCREEN) ===== */}
         <div className="hidden md:flex flex-1 justify-center space-x-8 text-gray-700 font-medium">
           <NavLink to="/home" className={navLinkClass}>Home</NavLink>
+          <NavLink to="/books" className={navLinkClass}>Books</NavLink>
           <NavLink to="/about" className={navLinkClass}>About</NavLink>
           <NavLink to="/contact-us" className={navLinkClass}>Contact Us</NavLink>
           <NavLink to="/blog" className={navLinkClass}>Blog</NavLink>
