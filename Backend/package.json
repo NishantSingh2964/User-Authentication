@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js",
-    "postinstall": "npm rebuild bson"
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
@@ -27,5 +26,8 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^8.0.1",
     "nodemon": "^3.1.14"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
