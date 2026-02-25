@@ -111,7 +111,7 @@ const AuthProvider = ({ children }) => {
             const res = await axios.post(`${backendUrl}/delete-account`, {
                 email: user.email,
             });
-            
+
             return res.data;
         } catch (error) {
             const message = error.response?.data?.message || error.message;

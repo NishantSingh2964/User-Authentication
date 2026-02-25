@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useBook } from "../Context/BookContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const AddBook = () => {
-  const { addBook, loading } = useBook();
+  const { id } = useParams(); // 🔥 detect edit mode
   const navigate = useNavigate();
+
+  const {
+    addBook,
+    updateBook,
+    fetchSingleBook,
+    singleBook,
+    loading,
+  } = useBook();
+
+  const isEditMode = Boolean(id);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -16,6 +26,28 @@ const AddBook = () => {
 
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
+
+  // 🔥 Fetch book data if editing
+  useEffect(() => {
+    if (isEditMode) {
+      fetchSingleBook(id);
+    }
+  }, [id]);
+
+  // 🔥 Prefill form when book loads
+  useEffect(() => {
+    if (isEditMode && singleBook) {
+      setFormData({
+        title: singleBook.title || "",
+        author: singleBook.author || "",
+        description: singleBook.description || "",
+        price: singleBook.price || "",
+        quantity: singleBook.quantity || "",
+      });
+
+      setPreview(singleBook.image);
+    }
+  }, [singleBook]);
 
   const handleChange = (e) => {
     setFormData({
@@ -37,26 +69,33 @@ const AddBook = () => {
     Object.keys(formData).forEach((key) =>
       data.append(key, formData[key])
     );
-    data.append("image", image);
 
-    await addBook(data);
+    if (image) {
+      data.append("image", image);
+    }
+
+    if (isEditMode) {
+      await updateBook(id, data);
+    } else {
+      await addBook(data);
+    }
+
     navigate("/books");
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-16 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl p-10">
-        
+
         <h2 className="text-3xl font-bold text-gray-800 mb-10 text-center">
-          Add New Book
+          {isEditMode ? "Edit Book" : "Add New Book"}
         </h2>
 
         <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-10">
 
-          {/* LEFT SIDE - FORM FIELDS */}
+          {/* LEFT SIDE */}
           <div className="space-y-6">
 
-            {/* Title */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Book Title
@@ -67,12 +106,10 @@ const AddBook = () => {
                 required
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                placeholder="Enter book title"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition"
               />
             </div>
 
-            {/* Author */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Author
@@ -83,12 +120,10 @@ const AddBook = () => {
                 required
                 value={formData.author}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                placeholder="Enter author name"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition"
               />
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Description
@@ -99,46 +134,35 @@ const AddBook = () => {
                 value={formData.description}
                 onChange={handleChange}
                 rows="5"
-                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                placeholder="Write a detailed description..."
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 transition"
               />
             </div>
 
-            {/* Price & Quantity */}
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Price (₹)
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  required
-                  value={formData.price}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                />
-              </div>
+              <input
+                type="number"
+                name="price"
+                required
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Price"
+                className="border border-gray-300 rounded-xl px-4 py-3"
+              />
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Quantity
-                </label>
-                <input
-                  type="number"
-                  name="quantity"
-                  required
-                  value={formData.quantity}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                />
-              </div>
+              <input
+                type="number"
+                name="quantity"
+                required
+                value={formData.quantity}
+                onChange={handleChange}
+                placeholder="Quantity"
+                className="border border-gray-300 rounded-xl px-4 py-3"
+              />
             </div>
           </div>
 
-          {/* RIGHT SIDE - IMAGE PREVIEW */}
+          {/* RIGHT SIDE */}
           <div className="flex flex-col justify-between">
-            
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Book Cover Image
@@ -147,7 +171,6 @@ const AddBook = () => {
               <div className="border-2 border-dashed border-gray-300 rounded-2xl p-6 text-center cursor-pointer hover:border-indigo-500 transition">
                 <input
                   type="file"
-                  required
                   onChange={handleImageChange}
                   className="hidden"
                   id="imageUpload"
@@ -160,26 +183,30 @@ const AddBook = () => {
                       className="w-full h-64 object-cover rounded-xl"
                     />
                   ) : (
-                    <div className="text-gray-500">
-                      <p className="font-medium">
-                        Click to upload book cover
-                      </p>
-                      <p className="text-sm">
-                        JPG, PNG, WEBP supported
-                      </p>
-                    </div>
+                    <p className="text-gray-500">
+                      Click to upload book cover
+                    </p>
                   )}
                 </label>
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* 🔥 Dynamic Button */}
             <button
               type="submit"
               disabled={loading}
-              className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md hover:shadow-lg"
+              className={`mt-8 w-full py-3 rounded-xl font-semibold text-lg transition-all duration-300 shadow-md ${isEditMode
+                ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+                }`}
             >
-              {loading ? "Adding Book..." : "Publish Book"}
+              {loading
+                ? isEditMode
+                  ? "Updating..."
+                  : "Adding..."
+                : isEditMode
+                  ? "Update Book"
+                  : "Publish Book"}
             </button>
           </div>
         </form>

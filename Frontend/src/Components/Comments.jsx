@@ -1,30 +1,33 @@
 import React, { useContext, useEffect, useState } from "react";
-import { CommentContext } from "../Context/CommentContext";
+import { useComment } from "../Context/CommentContext";
 import { AuthContext } from "../Context/AuthContext";
 import toast from "react-hot-toast";
 
-const Comments = ({ blogId, blogAuthorId }) => {
+const Comments = ({ itemId, itemAuthorId, model }) => {
   const {
     comments,
-    getComments,
+    fetchComments,
     addComment,
     deleteComment,
     editComment,
     loading,
-    actionLoading,
-  } = useContext(CommentContext);
+  } = useComment();
 
   const { user } = useContext(AuthContext);
 
   const [text, setText] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
 
+  /* =========================
+     FETCH COMMENTS
+  ========================== */
   useEffect(() => {
-    if (blogId) {
-      getComments(blogId);
+    if (itemId && model) {
+      fetchComments(itemId, model);
     }
-  }, [blogId]);
+  }, [itemId, model]);
 
   /* =========================
      ADD COMMENT
@@ -42,27 +45,24 @@ const Comments = ({ blogId, blogAuthorId }) => {
       return;
     }
 
-    const res = await addComment(blogId, text);
+    setActionLoading(true);
+
+    const res = await addComment(itemId, model, text);
 
     if (res?.success) {
-      toast.success("Comment added");
       setText("");
-    } else {
-      toast.error("Failed to add comment");
     }
+
+    setActionLoading(false);
   };
 
   /* =========================
      DELETE COMMENT
   ========================== */
   const handleDelete = async (commentId) => {
-    const res = await deleteComment(commentId);
-
-    if (res?.success) {
-      toast.success("Comment deleted");
-    } else {
-      toast.error("Delete failed");
-    }
+    setActionLoading(true);
+    await deleteComment(commentId);
+    setActionLoading(false);
   };
 
   /* =========================
@@ -74,25 +74,23 @@ const Comments = ({ blogId, blogAuthorId }) => {
       return;
     }
 
+    setActionLoading(true);
+
     const res = await editComment(commentId, editText);
 
     if (res?.success) {
-      toast.success("Comment updated");
       setEditingId(null);
-    } else {
-      toast.error("Update failed");
     }
+
+    setActionLoading(false);
   };
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-16">
-
-      {/* Heading */}
       <h2 className="text-3xl font-bold mb-10 text-blue-600">
         Comments ({comments.length})
       </h2>
 
-      {/* COMMENTS LIST */}
       {loading ? (
         <p className="text-gray-500">Loading comments...</p>
       ) : comments.length === 0 ? (
@@ -105,30 +103,26 @@ const Comments = ({ blogId, blogAuthorId }) => {
             const isCommentOwner =
               user?._id === comment.user?._id;
 
-            const isBlogOwner =
-              user?._id === blogAuthorId;
+            const isItemOwner =
+              user?._id === itemAuthorId;
 
             return (
               <div
                 key={comment._id}
-                className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 hover:shadow-lg transition"
+                className="bg-white p-6 rounded-2xl shadow-md border border-gray-100"
               >
-                {/* Top Row */}
                 <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <p className="font-semibold text-gray-800 text-lg">
-                      {comment.user?.name || "Anonymous"}
-                    </p>
-                  </div>
+                  <p className="font-semibold text-gray-800 text-lg">
+                    {comment.user?.name || "Anonymous"}
+                  </p>
 
-                  <div className="text-sm text-gray-500 text-right whitespace-nowrap">
+                  <div className="text-sm text-gray-500">
                     {new Date(comment.createdAt).toLocaleString()}
                   </div>
                 </div>
 
-                {/* COMMENT TEXT OR EDIT FIELD */}
                 {editingId === comment._id ? (
-                  <div>
+                  <>
                     <textarea
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
@@ -140,7 +134,7 @@ const Comments = ({ blogId, blogAuthorId }) => {
                       <button
                         onClick={() => handleEdit(comment._id)}
                         disabled={actionLoading}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                        className="bg-green-600 text-white px-4 py-2 rounded-lg"
                       >
                         Save
                       </button>
@@ -152,15 +146,14 @@ const Comments = ({ blogId, blogAuthorId }) => {
                         Cancel
                       </button>
                     </div>
-                  </div>
+                  </>
                 ) : (
                   <p className="text-gray-700 leading-relaxed">
                     {comment.text}
                   </p>
                 )}
 
-                {/* ACTION BUTTONS */}
-                {(isCommentOwner || isBlogOwner) && (
+                {(isCommentOwner || isItemOwner) && (
                   <div className="flex gap-4 mt-4 text-sm">
                     {isCommentOwner && (
                       <button
@@ -177,7 +170,7 @@ const Comments = ({ blogId, blogAuthorId }) => {
                     <button
                       onClick={() => handleDelete(comment._id)}
                       disabled={actionLoading}
-                      className="text-red-600 hover:underline disabled:opacity-50"
+                      className="text-red-600 hover:underline"
                     >
                       Delete
                     </button>
@@ -199,26 +192,20 @@ const Comments = ({ blogId, blogAuthorId }) => {
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            disabled={!user}
             placeholder={
               user
                 ? "Write your thoughts..."
                 : "Login to write a comment..."
             }
-            disabled={!user}
-            className="w-full border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none disabled:bg-gray-100"
+            className="w-full border rounded-xl p-4 resize-none disabled:bg-gray-100"
             rows="4"
           />
 
           <button
             type="submit"
             disabled={actionLoading || !user}
-            className={`mt-4 px-6 py-3 rounded-xl font-medium transition-all
-              ${
-                actionLoading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              }
-            `}
+            className="mt-4 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white"
           >
             {actionLoading ? "Posting..." : "Post Comment"}
           </button>

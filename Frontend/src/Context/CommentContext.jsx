@@ -1,119 +1,116 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export const CommentContext = createContext();
+export const useComment = () => useContext(CommentContext);
 
-const CommentContextProvider = ({ children }) => {
+const API_URL = "https://user-authentication-ecru.vercel.app/api/comments";
+
+export const CommentProvider = ({ children }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [actionLoading, setActionLoading] = useState(false);
 
-  const API = "https://user-authentication-ecru.vercel.app/api/comments";
+  const getAuthHeader = () => ({
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
 
-  const getComments = async (blogId) => {
+  const fetchComments = async (itemId, model) => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(`${API}/${blogId}`);
+      const { data } = await axios.get(
+        `${API_URL}/${itemId}/${model}`
+      );
 
       if (data.success) {
         setComments(data.comments);
       }
+
+      return data;
+
     } catch (error) {
-      console.log(error);
+      toast.error("Failed to fetch comments");
+      return { success: false };
     } finally {
       setLoading(false);
     }
   };
 
-  const addComment = async (blogId, text) => {
+  const addComment = async (itemId, model, text) => {
     try {
-      setActionLoading(true);
-
-      const token = localStorage.getItem("token");
-
       const { data } = await axios.post(
-        `${API}/add`,
-        { blogId, text },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        API_URL,
+        { itemId, model, text },
+        getAuthHeader()
       );
 
       if (data.success) {
         setComments((prev) => [data.comment, ...prev]);
+        toast.success("Comment added");
       }
 
       return data;
+
     } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to add comment";
+
+      toast.error(message);
       return { success: false };
-    } finally {
-      setActionLoading(false);
     }
   };
 
   const deleteComment = async (commentId) => {
     try {
-      setActionLoading(true);
-
-      const token = localStorage.getItem("token");
-
       const { data } = await axios.delete(
-        `${API}/comment/${commentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${API_URL}/${commentId}`,
+        getAuthHeader()
       );
 
       if (data.success) {
         setComments((prev) =>
           prev.filter((comment) => comment._id !== commentId)
         );
+
+        toast.success("Comment deleted");
       }
 
       return data;
+
     } catch (error) {
+      toast.error("Failed to delete comment");
       return { success: false };
-    } finally {
-      setActionLoading(false);
     }
   };
 
-  const editComment = async (commentId, text) => {
+  const editComment = async (commentId, newText) => {
     try {
-      setActionLoading(true);
-
-      const token = localStorage.getItem("token");
-
       const { data } = await axios.put(
-        `${API}/comment/${commentId}`,
-        { text },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${API_URL}/${commentId}`,
+        { text: newText },
+        getAuthHeader()
       );
 
       if (data.success) {
         setComments((prev) =>
           prev.map((comment) =>
             comment._id === commentId
-              ? { ...comment, text: data.comment.text }
+              ? data.comment
               : comment
           )
         );
+
+        toast.success("Comment updated");
       }
 
       return data;
+
     } catch (error) {
+      toast.error("Failed to update comment");
       return { success: false };
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -122,8 +119,7 @@ const CommentContextProvider = ({ children }) => {
       value={{
         comments,
         loading,
-        actionLoading,
-        getComments,
+        fetchComments,
         addComment,
         deleteComment,
         editComment,
@@ -133,5 +129,3 @@ const CommentContextProvider = ({ children }) => {
     </CommentContext.Provider>
   );
 };
-
-export default CommentContextProvider;

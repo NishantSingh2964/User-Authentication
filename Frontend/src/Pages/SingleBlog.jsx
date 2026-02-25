@@ -131,7 +131,7 @@ const SingleBlog = () => {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* ================= HERO SECTION (UNCHANGED) ================= */}
+      {/* HERO SECTION */}
       <div className="relative w-full h-[480px]">
         {singleBlog.image && (
           <img
@@ -178,21 +178,20 @@ const SingleBlog = () => {
                 onClick={handleLike}
                 disabled={likeLoading}
                 className={`flex items-center gap-3 px-5 py-3 rounded-full backdrop-blur-md border transition-all duration-200
-                ${
-                  liked
+                ${liked
                     ? "bg-red-500/20 border-red-400 text-red-400"
                     : "bg-white/20 border-white/30 text-white hover:bg-white/30"
-                }
-                ${
-                  likeLoading
+                  }
+                ${likeLoading
                     ? "opacity-60 cursor-not-allowed"
                     : "hover:scale-105"
-                }
+                  }
               `}
               >
                 <span className="text-2xl">
                   {liked ? "❤️" : "🤍"}
                 </span>
+                <span>{likesCount}</span>
               </button>
             </div>
           </div>
@@ -217,9 +216,15 @@ const SingleBlog = () => {
         </div>
       </div>
 
-      <BlogContent content={singleBlog.content} blogAuthorId={singleBlog.author?._id}/>
-      <Comments blogId={id} />
+      {/* BLOG CONTENT */}
+      <BlogContent content={singleBlog.content} />
 
+      {/* REUSABLE COMMENTS COMPONENT */}
+      <Comments
+        itemId={id}
+        itemAuthorId={singleBlog.author?._id}
+        model="Blog"
+      />
     </div>
   );
 };

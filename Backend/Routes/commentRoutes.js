@@ -4,9 +4,9 @@ import authMiddleware from "../Middleware/authMiddleware.js";
 
 const commentRouter = express.Router();
 
-commentRouter.post("/add", authMiddleware, addComment);
-commentRouter.get("/:blogId", getComments);
-commentRouter.put("/comment/:id", authMiddleware, editComment);
-commentRouter.delete("/comment/:id", authMiddleware, deleteComment);
+commentRouter.post("/", authMiddleware, addComment);
+commentRouter.get("/:itemId/:model", getComments);
+commentRouter.delete("/:id", authMiddleware, deleteComment);
+commentRouter.put("/:id", authMiddleware, editComment);
 
 export default commentRouter;

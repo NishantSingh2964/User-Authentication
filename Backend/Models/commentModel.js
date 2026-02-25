@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema(
   {
-    blog: {
+    item: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Blog",
       required: true,
@@ -17,6 +17,12 @@ const commentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    onModel: {
+      type: String,
+      required: true,
+      enum: ["Blog", "Book"],
+    },
+
   },
   { timestamps: true }
 );

@@ -5,21 +5,24 @@ import App from './App.jsx'
 import { BrowserRouter } from "react-router-dom";
 import AuthProvider from "./Context/AuthContext.jsx";
 import BlogProvider from './Context/blogContext.jsx';
-import CommentContextProvider from './Context/CommentContext.jsx';
+import { CommentProvider } from "./Context/CommentContext.jsx";
 import { BookProvider } from './Context/BookContext.jsx';
 import { OrderProvider } from './Context/OrderContext.jsx';
+import { FavoriteContext, FavoriteProvider } from './Context/favouriteContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <BrowserRouter>
       <BlogProvider>
-        <CommentContextProvider>
+        <CommentProvider>
           <BookProvider>
-            <OrderProvider>
-              <App />
-            </OrderProvider>
+            <FavoriteProvider>
+              <OrderProvider>
+                <App />
+              </OrderProvider>
+            </FavoriteProvider>
           </BookProvider>
-        </CommentContextProvider>
+        </CommentProvider>
       </BlogProvider>
     </BrowserRouter>
   </AuthProvider>

@@ -55,7 +55,7 @@ const BookCard = ({ book }) => {
 
         {/* View More Button */}
         <button
-          onClick={() => navigate(`/books/${book._id}`)}
+          onClick={() => navigate(`/single-book/${book._id}`)}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-all duration-300 mt-auto"
         >
           View More

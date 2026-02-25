@@ -17,6 +17,8 @@ import SingleBlog from './Pages/SingleBlog';
 import ScrollToTop from './Components/ScrollToTop';
 import Books from './Pages/Books';
 import AddBook from './Pages/AddBooks';
+import SingleBook from './Pages/SingleBook';
+import Favourites from './Pages/Favorites';
 
 
 function App() {
@@ -33,7 +35,10 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/books" element={<Books />} />
+            <Route path="/single-book/:id" element={<SingleBook />} />
             <Route path="/add-book" element={<AddBook />} />
+            <Route path="/edit-book/:id" element={<AddBook />} />
+            <Route path="/favourites" element={<Favourites />} />
             <Route path="/contact-us" element={<Contact />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />

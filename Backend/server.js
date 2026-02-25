@@ -7,6 +7,7 @@ import BlogRouter from "./Routes/blogRoutes.js";
 import commentRouter from "./Routes/commentRoutes.js";
 import bookRouter from "./Routes/bookRoutes.js";
 import orderRouter from "./Routes/orderRoutes.js";
+import favoriteRouter from "./Routes/favouriteRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -30,6 +31,7 @@ app.use("/api/blog", BlogRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/books", bookRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/favorites", favoriteRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("API is running 🚀");

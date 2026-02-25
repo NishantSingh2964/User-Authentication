@@ -182,47 +182,47 @@ const BlogProvider = ({ children }) => {
   };
 
   const toggleLike = async (id) => {
-  try {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const userId = storedUser?._id;
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const userId = storedUser?._id;
 
-    if (!userId) {
-      return { success: false, message: "User not found" };
-    }
-
-    const res = await axios.put(
-      `${backendUrl}/toggle-like/${id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${getToken()}`
-        }
+      if (!userId) {
+        return { success: false, message: "User not found" };
       }
-    );
 
-    if (res.data.success) {
+      const res = await axios.put(
+        `${backendUrl}/toggle-like/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${getToken()}`
+          }
+        }
+      );
 
-      setBlogs(prev =>
-        prev.map(blog =>
-          blog._id === id
-            ? {
+      if (res.data.success) {
+
+        setBlogs(prev =>
+          prev.map(blog =>
+            blog._id === id
+              ? {
                 ...blog,
                 likes: res.data.liked
                   ? [...blog.likes, userId]
                   : blog.likes.filter(likeId => likeId !== userId)
               }
-            : blog
-        )
-      );
+              : blog
+          )
+        );
 
-      return res.data;
+        return res.data;
+      }
+
+    } catch (error) {
+      console.error(error);
+      return { success: false };
     }
-
-  } catch (error) {
-    console.error(error);
-    return { success: false };
-  }
-};
+  };
 
 
 
