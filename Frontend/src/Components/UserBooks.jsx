@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useBook } from "../Context/BookContext";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
 
 const UserBooks = () => {
   const { user } = useContext(AuthContext);
@@ -10,8 +9,10 @@ const UserBooks = () => {
   const [showAll, setShowAll] = useState(false);
   const navigate = useNavigate();
 
+  const isVerified = user?.isAccountVerified;
+
   useEffect(() => {
-    if (user) {
+    if (user?._id) {
       fetchUserBooks(user._id);
     }
   }, [user]);
@@ -26,12 +27,19 @@ const UserBooks = () => {
           Your Listed Books
         </h2>
 
-        <button
-          onClick={() => navigate("/add-book")}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium"
-        >
-          + Add Book
-        </button>
+        {/* ✅ Show Add Book only if verified */}
+        {isVerified ? (
+          <button
+            onClick={() => navigate("/add-book")}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium shadow-md"
+          >
+            + Add Book
+          </button>
+        ) : (
+          <div className="text-sm bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-2 rounded-lg">
+            Verify your account to add books
+          </div>
+        )}
       </div>
 
       {/* Empty State */}
@@ -67,16 +75,21 @@ const UserBooks = () => {
                   ₹ {book.price}
                 </p>
 
-                <p
-                  className={`text-sm font-medium mb-4 ${
-                    book.quantity > 0 ? "text-green-600" : "text-red-500"
+                {/* Stock Badge */}
+                <span
+                  className={`inline-block px-3 py-1 text-xs font-medium rounded-full mb-4 ${
+                    book.quantity > 0
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-600"
                   }`}
                 >
-                  Stock: {book.quantity}
-                </p>
+                  {book.quantity > 0
+                    ? `Stock Left: ${book.quantity}`
+                    : "Out of Stock"}
+                </span>
 
                 <button
-                  onClick={() => navigate(`/books/${book._id}`)}
+                  onClick={() => navigate(`/single-book/${book._id}`)}
                   className="mt-auto bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition"
                 >
                   View Details

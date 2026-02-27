@@ -20,20 +20,24 @@ export const OrderProvider = ({ children }) => {
 
   // 🔹 Place order
   const placeOrder = async (books) => {
-    try {
-      setLoading(true);
-      const { data } = await axios.post(
-        API_URL,
-        { books },
-        getAuthHeader()
-      );
-      setOrders((prev) => [...prev, data]);
-    } catch (err) {
-      setError(err.response?.data?.message || "Error placing order");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const { data } = await axios.post(
+      API_URL,
+      { books },
+      getAuthHeader()
+    );
+
+    setOrders((prev) => [...prev, data]);
+
+    return data; 
+  } catch (err) {
+    setError(err.response?.data?.message || "Error placing order");
+    throw err; 
+  } finally {
+    setLoading(false);
+  }
+};
 
   // 🔹 Get user orders
   const fetchUserOrders = async (userId) => {

@@ -5,21 +5,49 @@ export const addBook = async (req, res) => {
     const { title, description, author, price, quantity } = req.body;
     const image = req.file?.path;
 
-    if (!title || !author || !price || !quantity || !image) {
-      return res.status(400).json({ message: "All fields including image are required" });
+    // 🔐 1. Check if user is verified
+    if (!req.user?.isAccountVerified) {
+      return res.status(403).json({
+        message: "Please verify your account before adding books",
+      });
     }
 
+    // 🔎 2. Validate required fields
+    if (!title || !author || !price || !quantity || !image) {
+      return res.status(400).json({
+        message: "All fields including image are required",
+      });
+    }
+
+    // 🔢 3. Convert & validate numbers
+    const parsedPrice = Number(price);
+    const parsedQuantity = Number(quantity);
+
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      return res.status(400).json({
+        message: "Price must be a positive number",
+      });
+    }
+
+    if (isNaN(parsedQuantity) || parsedQuantity < 0) {
+      return res.status(400).json({
+        message: "Quantity cannot be negative",
+      });
+    }
+
+    // 📦 4. Create book
     const book = await Book.create({
-      title,
-      description,
-      author,
-      price,
-      quantity,
+      title: title.trim(),
+      description: description?.trim() || "",
+      author: author.trim(),
+      price: parsedPrice,
+      quantity: parsedQuantity,
       image,
       seller: req.user._id,
     });
 
     return res.status(201).json(book);
+
   } catch (error) {
     console.error("Add Book Error:", error.message);
     return res.status(500).json({ message: "Server Error" });

@@ -21,7 +21,10 @@ export const FavoriteProvider = ({ children }) => {
         try {
             setLoading(true);
 
-            const { data } = await axios.get(API_URL, getAuthHeader());
+            const { data } = await axios.get(API_URL, {
+                ...getAuthHeader(),
+                withCredentials: true, // ⚡ Add this
+            });
 
             if (data.success) {
                 setFavorites(data.favorites);
@@ -38,7 +41,10 @@ export const FavoriteProvider = ({ children }) => {
             const { data } = await axios.post(
                 `${API_URL}/${bookId}`,
                 {},
-                getAuthHeader()
+                {
+                    ...getAuthHeader(),
+                    withCredentials: true,
+                }
             );
 
             if (data.success) {

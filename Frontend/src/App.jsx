@@ -19,6 +19,8 @@ import Books from './Pages/Books';
 import AddBook from './Pages/AddBooks';
 import SingleBook from './Pages/SingleBook';
 import Favourites from './Pages/Favorites';
+import PaymentPage from './Pages/PaymentPage';
+import PurchasedBooks from './Pages/PurchasedBooks';
 
 
 function App() {
@@ -36,10 +38,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/books" element={<Books />} />
             <Route path="/single-book/:id" element={<SingleBook />} />
+            <Route path="/payment" element={<PaymentPage />} />
             <Route path="/add-book" element={<AddBook />} />
             <Route path="/edit-book/:id" element={<AddBook />} />
             <Route path="/favourites" element={<Favourites />} />
             <Route path="/contact-us" element={<Contact />} />
+            <Route path="/purchased-books" element={<PurchasedBooks />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/write-blog" element={<WriteBlog />} />

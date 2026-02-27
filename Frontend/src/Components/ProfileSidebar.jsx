@@ -47,6 +47,7 @@ const ProfileSidebar = () => {
     if (!confirmed) return;
 
     const res = await deleteAccount();
+
     if (res.success) {
       logout();
       toast.success("Account deleted successfully");
@@ -60,19 +61,30 @@ const ProfileSidebar = () => {
 
   return (
     <div className="col-span-1">
-      <div className="bg-white shadow-xl rounded-2xl p-8 sticky top-10 space-y-6">
-        
+      <div className="bg-white shadow-2xl rounded-3xl p-8 sticky top-10 space-y-6 border border-gray-100">
+
         {/* Profile Info */}
         <div className="flex flex-col items-center text-center">
           <img
             src="https://i.pravatar.cc/150?img=3"
             alt="Profile"
-            className="w-28 h-28 rounded-full shadow-md mb-4"
+            className="w-28 h-28 rounded-full shadow-lg mb-4 ring-4 ring-gray-100"
           />
           <h2 className="text-2xl font-semibold text-gray-800">
             {user.name}
           </h2>
           <p className="text-gray-500 text-sm">{user.email}</p>
+
+          {/* Verification Badge */}
+          <span
+            className={`mt-2 px-3 py-1 text-xs font-medium rounded-full ${
+              isVerified
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-600"
+            }`}
+          >
+            {isVerified ? "Verified Account" : "Not Verified"}
+          </span>
         </div>
 
         {/* Account Info */}
@@ -107,7 +119,7 @@ const ProfileSidebar = () => {
         )}
 
         {showOtpInput && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <input
               type="text"
               placeholder="Enter OTP"
@@ -126,27 +138,38 @@ const ProfileSidebar = () => {
 
         {/* Action Buttons */}
         <div className="space-y-3 pt-4 border-t">
-          <button
-            onClick={() => navigate("/add-book")}
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
-            + Add Book
-          </button>
 
-          <button
-            onClick={()=> navigate('/write-blog')}
-            className="w-full bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition"
-          >
-            Create Blog
-          </button>
+          {/* ✅ Only visible if verified */}
+          {isVerified ? (
+            <>
+              <button
+                onClick={() => navigate("/add-book")}
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-xl hover:bg-indigo-700 transition font-medium shadow-md"
+              >
+                + Add Book
+              </button>
+
+              <button
+                onClick={() => navigate("/write-blog")}
+                className="w-full bg-gray-700 text-white py-2.5 rounded-xl hover:bg-gray-800 transition font-medium shadow-md"
+              >
+                Create Blog
+              </button>
+            </>
+          ) : (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 text-sm p-3 rounded-lg text-center">
+              Please verify your account to add books or create blogs.
+            </div>
+          )}
 
           <button
             onClick={handleDeleteAccount}
-            className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+            className="w-full bg-red-600 text-white py-2.5 rounded-xl hover:bg-red-700 transition font-medium shadow-md"
           >
             Delete Account
           </button>
         </div>
+
       </div>
     </div>
   );

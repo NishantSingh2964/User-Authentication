@@ -55,6 +55,12 @@ const Navbar = () => {
               <div className="absolute right-0 mt-2 w-36 bg-white shadow-lg rounded-md 
                 opacity-0 group-hover:opacity-100 invisible group-hover:visible 
                 transition-all duration-200 overflow-hidden z-50">
+                  <NavLink
+                  to="/purchased-books"
+                  className="block px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
+                >
+                  Orders
+                </NavLink>
                 <NavLink
                   to="/profile"
                   className="block px-4 py-2 text-gray-700 hover:bg-blue-600 hover:text-white transition"
