@@ -23,7 +23,7 @@ export const FavoriteProvider = ({ children }) => {
 
             const { data } = await axios.get(API_URL, {
                 ...getAuthHeader(),
-                withCredentials: true, // ⚡ Add this
+                withCredentials: true, 
             });
 
             if (data.success) {

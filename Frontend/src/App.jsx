@@ -8,7 +8,6 @@ import Layout from './Components/Layout';
 import ProtectedRoute from './Components/ProtectedRoutes';
 import About from './Pages/About';
 import Blog from './Pages/Blog';
-import Contact from './Pages/Contact';
 import Profile from './Pages/Profile';
 import { Toaster } from "react-hot-toast";
 import ForgotPassword from './Pages/ForgotPassword';
@@ -21,6 +20,7 @@ import SingleBook from './Pages/SingleBook';
 import Favourites from './Pages/Favorites';
 import PaymentPage from './Pages/PaymentPage';
 import PurchasedBooks from './Pages/PurchasedBooks';
+import LandingPage from './Pages/LandingPage';
 
 
 function App() {
@@ -29,7 +29,8 @@ function App() {
       <Toaster position="top-right" reverseOrder={false} />
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<LoginSignUp />} />
+        <Route path='/' element={<LandingPage/>} />
+        <Route path="/login" element={<LoginSignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route element={<ProtectedRoute />}>
@@ -42,7 +43,6 @@ function App() {
             <Route path="/add-book" element={<AddBook />} />
             <Route path="/edit-book/:id" element={<AddBook />} />
             <Route path="/favourites" element={<Favourites />} />
-            <Route path="/contact-us" element={<Contact />} />
             <Route path="/purchased-books" element={<PurchasedBooks />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/profile" element={<Profile />} />

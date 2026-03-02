@@ -57,6 +57,7 @@ export const addBook = async (req, res) => {
 export const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find({ quantity: { $gt: 0 } })
+      .sort({ createdAt: -1 }) // 🔥 NEWEST FIRST
       .populate("seller", "name email");
 
     return res.status(200).json({
