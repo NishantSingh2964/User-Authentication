@@ -13,29 +13,16 @@ import favoriteRouter from "./Routes/favouriteRoutes.js";
 dotenv.config();
 
 const app = express();
-
-// ========================
-// Connect to Database
-// ========================
 connectDB();
-
-// ========================
-// Middlewares
-// ========================
 
 app.use(express.json());
 
-// CORS (for Vite frontend running on 5174)
 app.use(
   cors({
     origin: "https://user-authentication-yrl6.vercel.app",
     credentials: true,
   })
 );
-
-// ========================
-// Routes
-// ========================
 
 app.use("/api/user", userRouter);
 app.use("/api/blog", BlogRouter);
